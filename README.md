@@ -4,9 +4,11 @@ HzCheck is a Python library that provides various tools for retrieving informati
 I started this project just two days ago, and I've already added a bunch of useful functions that allow you to get information such as the WiFi name, the devices connected to the WiFi, the IP addresses of devices, and more.
 
 # Installation  
-To install HzCheck, simply use pip:
+To install HzCheck, simply use git:
 
-***`pip install hzcheck`***
+***`git clone https://github.com/MucciDev/HzCheck.git`***
+
+#### Note: You need to have git installed, otherwise you wont be able to install it.
 
 # Usage  
 Here's an example of how to use the library to get the WiFi name and the devices connected to it:
