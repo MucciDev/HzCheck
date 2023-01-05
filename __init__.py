@@ -22,19 +22,20 @@ def getinfo():
             devices.append(device)
     return devices
 
-def showinfo(device_name):
-    # Use the command line tool 'arp' to get the IP address and MAC address of a specific device
-    result = subprocess.run(['arp', '-a', device_name], stdout=subprocess.PIPE)
+def showinfo():
+    result = subprocess.run(['arp', '-a'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8').strip()
-    # Extract the IP address and MAC address from the output
-    device_ip = output.split()[1][1:-1]
-    device_mac = output.split()[3]
-    # Use the 'getent' command to get the device name from the hostname
-    result = subprocess.run(['getent', 'hosts', device_name], stdout=subprocess.PIPE)
-    output = result.stdout.decode('utf-8').strip()
-    device_name = output.split()[1]
-    # Return the device information as a dictionary
-    return {'name': device_name, 'ip': device_ip, 'mac': device_mac}
+    devices = []
+    for line in output.split('\n'):
+        if 'dynamic' in line:
+            device_info = {}
+            device_info['ip'] = line.split()[0]
+            device_info['mac'] = line.split()[2]
+            result = subprocess.run(['getent', 'hosts', device_info['ip']], stdout=subprocess.PIPE)
+            output = result.stdout.decode('utf-8').strip()
+            device_info['name'] = output.split()[1]
+            devices.append(device_info)
+    return devices
 
 def ping(target, num_bytes):
     # Resolve the IP address of the target if it is a domain name
