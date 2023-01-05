@@ -3,10 +3,12 @@ import socket
 import subprocess
 
 def getwifi():
-    # Use the command line tool 'iwgetid' to get the WiFi name
-    result = subprocess.run(['iwgetid', '-r'], stdout=subprocess.PIPE)
-    wifi_name = result.stdout.decode('utf-8').strip()
-    return wifi_name
+    result = subprocess.run(['netsh', 'wlan', 'show', 'interfaces'], stdout=subprocess.PIPE)
+    output = result.stdout.decode('utf-8').strip()
+    for line in output.split('\n'):
+        if 'SSID' in line:
+            wifi_name = line.split(':')[1].strip()
+            return wifi_name
 
 def getinfo():
     # Use the command line tool 'arp' to get the list of connected devices
