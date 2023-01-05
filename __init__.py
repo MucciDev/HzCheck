@@ -68,3 +68,13 @@ def trc(target):
             hop_ip = hop_info[1]
             hops.append(hop_ip)
     return hops
+
+def netscan():
+    result = subprocess.run(['netsh', 'wlan', 'show', 'networks'], stdout=subprocess.PIPE)
+    output = result.stdout.decode('utf-8').strip()
+    networks = []
+    for line in output.split('\n'):
+        if 'SSID' in line:
+            ssid = line.split(':')[1].strip()
+            networks.append(ssid)
+    return networks
