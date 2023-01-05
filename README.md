@@ -37,7 +37,7 @@ This function returns the name of the WiFi network that the device is connected 
 #### getinfo()
 This function returns a list of the IP addresses of devices that are connected to the same WiFi network as the device running the library.
 
-#### showinfo("device_ name")
+#### showinfo()
 This function returns the IP address, MAC address, and hostname of a specific device on the network. The device_name parameter should be the hostname or IP address of the device.
 
 #### ping(target, num_bytes)
