@@ -2,13 +2,13 @@ import os
 import socket
 import subprocess
 
-def get_wifi_name():
+def getwifi():
     # Use the command line tool 'iwgetid' to get the WiFi name
     result = subprocess.run(['iwgetid', '-r'], stdout=subprocess.PIPE)
     wifi_name = result.stdout.decode('utf-8').strip()
     return wifi_name
 
-def get_connected_devices():
+def getinfo():
     # Use the command line tool 'arp' to get the list of connected devices
     result = subprocess.run(['arp', '-a'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8').strip()
@@ -20,13 +20,19 @@ def get_connected_devices():
             devices.append(device)
     return devices
 
-def get_device_ip(device_name):
-    # Use the command line tool 'arp' to get the IP address of a specific device
+def showinfo(device_name):
+    # Use the command line tool 'arp' to get the IP address and MAC address of a specific device
     result = subprocess.run(['arp', '-a', device_name], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8').strip()
-    # Extract the IP address from the output
+    # Extract the IP address and MAC address from the output
     device_ip = output.split()[1][1:-1]
-    return device_ip
+    device_mac = output.split()[3]
+    # Use the 'getent' command to get the device name from the hostname
+    result = subprocess.run(['getent', 'hosts', device_name], stdout=subprocess.PIPE)
+    output = result.stdout.decode('utf-8').strip()
+    device_name = output.split()[1]
+    # Return the device information as a dictionary
+    return {'name': device_name, 'ip': device_ip, 'mac': device_mac}
 
 def ping(target, num_bytes):
     # Resolve the IP address of the target if it is a domain name
@@ -42,7 +48,7 @@ def ping(target, num_bytes):
     else:
         return False
 
-def trace(target):
+def trc(target):
     # Resolve the IP address of the target if it is a domain name
     try:
         ip_address = socket.gethostbyname(target)
