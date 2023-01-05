@@ -45,3 +45,6 @@ This function sends num_bytes of data to the specified target IP address or doma
 
 #### trc(target)
 This function traces the route to the specified target IP address or domain name and returns a list of the IP addresses of the intermediate hops.
+
+#### netscan
+This function scans for nearby WiFi networks and returns a list of the SSID (name) of the detected networks.
