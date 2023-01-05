@@ -14,9 +14,9 @@ To install HzCheck, simply use git:
 Here's an example of how to use the library to get the WiFi name and the devices connected to it:
 
 **`import hzcheck`**  
-`wifi_name = hzcheck.get_wifi_name()  
+`wifi_name = hzcheck.getwifi()  
 print(f'WiFi name: {wifi_name}')`  
-`devices = hzcheck.get_connected_devices()  
+`devices = hzcheck.getinfo()  
 print(f'Connected devices: {devices}')`  
 
 You can find more detailed documentation for each function in the library in the documentation file.
