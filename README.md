@@ -48,3 +48,6 @@ This function traces the route to the specified target IP address or domain name
 
 #### netscan()
 This function scans for nearby WiFi networks and returns a list of the SSID (name) of the detected networks.
+
+#### prtscan(ip_address)
+Scans the specified IP address for open ports.
