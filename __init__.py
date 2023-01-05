@@ -22,19 +22,25 @@ def getinfo():
             devices.append(device)
     return devices
 
+import subprocess
+
 def showinfo():
+    # Use the 'arp' command to get a list of all devices on the network
     result = subprocess.run(['arp', '-a'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8').strip()
+    # Extract the IP addresses and MAC addresses from the output
     devices = []
     for line in output.split('\n'):
         if 'dynamic' in line:
-            device_info = {}
-            device_info['ip'] = line.split()[0]
-            device_info['mac'] = line.split()[2]
-            result = subprocess.run(['getent', 'hosts', device_info['ip']], stdout=subprocess.PIPE)
-            output = result.stdout.decode('utf-8').strip()
-            device_info['name'] = output.split()[1]
-            devices.append(device_info)
+            device = {}
+            device['ip'] = line.split()[0]
+            device['mac'] = line.split()[2]
+            devices.append(device)
+    # Use the 'getent' command to get the hostnames for each device
+    for device in devices:
+        result = subprocess.run(['getent', 'hosts', device['ip']], stdout=subprocess.PIPE)
+        output = result.stdout.decode('utf-8').strip()
+        device['name'] = output.split()[1]
     return devices
 
 def ping(target, num_bytes):
@@ -79,3 +85,13 @@ def netscan():
             ssid = line.split(':')[1].strip()
             networks.append(ssid)
     return networks
+
+def prtscan(ip_address):
+    open_ports = []
+    # Try to connect to each port on the specified IP address using the 'powershell' command
+    for port in range(1, 65535):
+        result = subprocess.run(['powershell', '-c', f"Test-NetConnection -ComputerName {ip_address} -Port {port}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # If the 'powershell' command was successful, the port is open
+        if 'True' in result.stdout.decode('utf-8'):
+            open_ports.append(port)
+    return open_ports
