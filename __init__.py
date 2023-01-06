@@ -25,23 +25,30 @@ def getinfo():
 import subprocess
 
 def showinfo():
-    # Use the 'arp' command to get a list of all devices on the network
+    # Use the command line tool 'arp' to get the list of connected devices
     result = subprocess.run(['arp', '-a'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8').strip()
-    # Extract the IP addresses and MAC addresses from the output
+    # Extract the IP addresses from the output
     devices = []
     for line in output.split('\n'):
         if 'dynamic' in line:
-            device = {}
-            device['ip'] = line.split()[0]
-            device['mac'] = line.split()[2]
+            device = line.split()[0]
             devices.append(device)
-    # Use the 'getent' command to get the hostnames for each device
+    # Use the 'arp' command to get the IP address and MAC address of each device
+    device_info = []
     for device in devices:
-        result = subprocess.run(['getent', 'hosts', device['ip']], stdout=subprocess.PIPE)
+        result = subprocess.run(['arp', '-a', device], stdout=subprocess.PIPE)
         output = result.stdout.decode('utf-8').strip()
-        device['name'] = output.split()[1]
-    return devices
+        # Extract the IP address and MAC address from the output
+        device_ip = output.split()[1][1:-1]
+        device_mac = output.split()[3]
+        # Use the 'getent' command to get the device name from the hostname
+        result = subprocess.run(['getent', 'hosts', device], stdout=subprocess.PIPE)
+        output = result.stdout.decode('utf-8').strip()
+        device_name = output.split()[1]
+        # Add the device information to the list
+        device_info.append({'name': device_name, 'ip': device_ip, 'mac': device_mac})
+    return device_info
 
 def ping(target, num_bytes):
     # Resolve the IP address of the target if it is a domain name
