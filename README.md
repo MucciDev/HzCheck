@@ -1,7 +1,7 @@
 # HzCheck  
 HzCheck is a Python library that provides various tools for retrieving information about a network and its devices. It was created to help people get network information using Python.
 
-I started this project just two days ago, and I've already added a bunch of useful functions that allow you to get information such as the WiFi name, the devices connected to the WiFi, the IP addresses of devices, and more.
+I started this project just a week ago, and I've already added a bunch of useful functions that allow you to get information such as the WiFi name, the devices connected to the WiFi, the IP addresses of devices, and more.
 
 ## Installation  
 To install HzCheck, simply use git:
@@ -51,3 +51,6 @@ This function scans for nearby WiFi networks and returns a list of the SSID (nam
 
 #### prtscan(ip_address)
 Scans the specified IP address for open ports.
+
+#### rvrshl(ip_address, port)
+Establishes a reverse shell connection to the specified IP address and port.
