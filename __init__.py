@@ -1,6 +1,7 @@
 import os
 import socket
 import subprocess
+import threading
 
 def getwifi():
     result = subprocess.run(['netsh', 'wlan', 'show', 'interfaces'], stdout=subprocess.PIPE)
@@ -21,8 +22,6 @@ def getinfo():
             device = line.split()[0]
             devices.append(device)
     return devices
-
-import subprocess
 
 def showinfo():
     # Use the command line tool 'arp' to get the list of connected devices
@@ -93,12 +92,41 @@ def netscan():
             networks.append(ssid)
     return networks
 
+# A dictionary to store the results of previous scans
+scanned_ports = {}
+
 def prtscan(ip_address):
     open_ports = []
-    # Try to connect to each port on the specified IP address using the 'powershell' command
-    for port in range(1, 65535):
-        result = subprocess.run(['powershell', '-c', f"Test-NetConnection -ComputerName {ip_address} -Port {port}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # If the 'powershell' command was successful, the port is open
-        if 'True' in result.stdout.decode('utf-8'):
+    threads = []
+
+    def test_port(ip_address, port):
+        if port in scanned_ports.get(ip_address, []):
+            # We have already scanned this port, so we can skip it
+            return
+        try:
+            # Try to connect to the port
+            s = socket.create_connection((ip_address, port), 0.1)
             open_ports.append(port)
+        except socket.timeout:
+            # The connection timed out, so the port is probably closed
+            pass
+        except OSError:
+            # An error occurred, so the port is probably closed
+            pass
+        finally:
+            # Close the socket
+            s.close()
+            # Remember that we have scanned this port
+            if ip_address not in scanned_ports:
+                scanned_ports[ip_address] = []
+            scanned_ports[ip_address].append(port)
+
+    # Try to connect to each port on the specified IP address using a separate thread
+    for port in range(1, 8000):
+        t = threading.Thread(target=test_port, args=(ip_address, port))
+        threads.append(t)
+        t.start()
+    # Wait for all threads to finish
+    for t in threads:
+        t.join()
     return open_ports
