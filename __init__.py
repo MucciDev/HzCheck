@@ -103,6 +103,8 @@ def prtscan(ip_address):
         if port in scanned_ports.get(ip_address, []):
             # We have already scanned this port, so we can skip it
             return
+        # Initialize the socket to None
+        s = None
         try:
             # Try to connect to the port
             s = socket.create_connection((ip_address, port), 0.1)
@@ -114,8 +116,9 @@ def prtscan(ip_address):
             # An error occurred, so the port is probably closed
             pass
         finally:
-            # Close the socket
-            s.close()
+            # Close the socket if it is not None
+            if s is not None:
+                s.close()
             # Remember that we have scanned this port
             if ip_address not in scanned_ports:
                 scanned_ports[ip_address] = []
